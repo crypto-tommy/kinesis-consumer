@@ -1,0 +1,29 @@
+[
+  {
+    "name": "${image_name}",
+    "image": "${image_url}",
+    "essential": true,
+    "environment": [
+      {
+        "name": "dynamodb_table_name",
+        "value": "${dynamodb_table_name}"
+      },
+      {
+        "name": "region_name",
+        "value": "${region_name}"
+      },
+      {
+        "name": "kinesis_input_stream_name",
+        "value": "${kinesis_input_stream_name}"
+      },
+      {
+        "name": "destination_identifier",
+        "value": "${destination_identifier}"
+      },
+      {
+        "name": "destination_url",
+        "value": "${destination_url}"
+      }
+    ]
+  }
+]
