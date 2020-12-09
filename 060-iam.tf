@@ -76,16 +76,20 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution" {
 ###
 
 data "aws_iam_policy_document" "ecs_task_permission" {
-  statement {
-    actions = [
-      "dynamodb:DescribeTable",
-      # "dynamodb:CreateTable",
-      "dynamodb:Scan",
-      "dynamodb:PutItem",
-      "dynamodb:UpdateItem",
-      "dynamodb:GetItem"
-    ]
-    resources = ["arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${local.dynamodb_table_name}"]
+
+  dynamic "statement" {
+    for_each = local.consumer_configs
+
+    content {
+      actions = [
+        "dynamodb:DescribeTable",
+        "dynamodb:Scan",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:GetItem"
+      ]
+      resources = ["arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${statement.value.dynamodb_table_name}"]
+    }
   }
 
   statement {
@@ -112,4 +116,30 @@ resource "aws_iam_policy" "ecs_task" {
 resource "aws_iam_role_policy_attachment" "ecs_task" {
   role       = aws_iam_role.ecs_task.name
   policy_arn = aws_iam_policy.ecs_task.arn
+}
+
+#####################################################
+resource "random_uuid" "consumer" {}
+
+resource "aws_iam_user" "consumer" {
+  name = "${var.project_name}-kinesis-stream-consumer-${substr(random_uuid.consumer.result, 0, 5)}"
+  tags = local.tags
+
+  lifecycle {
+    ignore_changes = [name]
+  }
+}
+
+resource "aws_iam_policy" "consumer" {
+  name   = "${var.project_name}-kinesis-stream-consumer-policy"
+  policy = data.aws_iam_policy_document.ecs_task_permission.json
+}
+
+resource "aws_iam_user_policy_attachment" "consumer" {
+  user       = aws_iam_user.consumer.name
+  policy_arn = aws_iam_policy.consumer.arn
+}
+
+resource "aws_iam_access_key" "consumer" {
+  user = aws_iam_user.consumer.name
 }

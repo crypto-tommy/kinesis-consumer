@@ -11,9 +11,11 @@ resource "aws_ecs_cluster" "default" {
 }
 
 resource "aws_ecs_service" "default" {
-  name            = "${var.project_name}-ecs-service"
+  for_each = local.consumer_configs
+
+  name            = "${var.project_name}-${each.value.identifier}-ecs-service"
   cluster         = aws_ecs_cluster.default.id
-  task_definition = aws_ecs_task_definition.default.arn
+  task_definition = aws_ecs_task_definition.default[each.key].arn
 
   launch_type = "FARGATE"
 
@@ -29,17 +31,19 @@ resource "aws_ecs_service" "default" {
 ###
 
 resource "aws_ecs_task_definition" "default" {
+  for_each = local.consumer_configs
+
   family = "${var.project_name}-ecs-task"
 
   container_definitions = templatefile("statics/java-connector/service.json", {
-    image_name = data.aws_ecr_repository.default.name
-    image_url  = data.aws_ecr_repository.default.repository_url
+    image_name = regex("[^/]+$",(regex("^[^:]+",data.docker_registry_image.default.name)))
+    image_url  = data.docker_registry_image.default.name
 
-    dynamodb_table_name       = local.dynamodb_table_name
+    dynamodb_table_name       = each.value.dynamodb_table_name
     region_name               = data.aws_region.current.name
     kinesis_input_stream_name = aws_kinesis_stream.default.name
-    destination_identifier    = ""
-    destination_url           = var.destination_url
+    destination_identifier    = each.value.identifier
+    destination_url           = each.value.url
   })
 
   execution_role_arn = aws_iam_role.ecs_task_execution.arn

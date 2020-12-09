@@ -14,14 +14,16 @@ $ mvn clean compile exec:java -Dargs="SumologicConnector.properties"
 Dockerize
 
 ```sh
-$ docker build -t kinesis-stream-consumer .
+$ docker build -t kinesis-data-stream-java-connector .
+$ docker tag kinesis-data-stream-java-connector crypto1tim/kinesis-data-stream-java-connector:latest
+$ docker push crypto1tim/kinesis-data-stream-java-connector:latest
+```
+
+Run
+```sh
 $ docker run --rm -it -e appName="[AWS dynamodb name]" \
 -e regionName="[AWS region]"  \
 -e kinesisInputStream="[AWS kinesis stream name]" \
 -e connectorDestination="" \
--e sumologicUrl="[Consumer Url]" kinesis-stream-consumer
+-e sumologicUrl="[Consumer Url]" kinesis-data-stream-java-connector
 ```
-
-### Production
-
-Push to AWS ECR, repo name is kinesis-stream-consumer

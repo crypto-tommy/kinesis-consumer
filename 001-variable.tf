@@ -13,8 +13,11 @@ variable "cloudwatch_log_groups" {
   }))
 }
 
-variable "destination_url" {
-  type = string
+variable "consumer_configs" {
+  type = list(object({
+    url        = string
+    identifier = string
+  }))
 }
 
 variable "fargate_subnets" {
