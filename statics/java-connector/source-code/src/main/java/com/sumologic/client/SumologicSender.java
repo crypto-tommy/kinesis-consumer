@@ -47,6 +47,7 @@ public class SumologicSender {
     String logStreamName = data.substring(data.lastIndexOf("LogStream:"));
 
     String sourceHost = logStreamName.replace("LogStream:","").trim();
+    sourceHost = sourceHost.replace("app/","");
     data = data.replace(logStreamName,"");
 
     byte[] compressedData = SumologicKinesisUtils.compressGzip(data);
