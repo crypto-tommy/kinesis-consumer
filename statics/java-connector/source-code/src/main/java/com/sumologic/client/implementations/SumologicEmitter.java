@@ -29,12 +29,12 @@ public class SumologicEmitter implements IEmitter<String> {
 
     public SumologicEmitter(KinesisConnectorConfiguration configuration) {
         this.config = (KinesisConnectorForSumologicConfiguration) configuration;
-        sender = new SumologicSender(this.config.SUMOLOGIC_URL);
+        sender = new SumologicSender(this.config.SUMOLOGIC_URL, this.config.INPUT_STREAM);
         batchSize = this.config.BUFFER_RECORD_COUNT_LIMIT;
     }
-    
-    public SumologicEmitter(String url) {
-        sender = new SumologicSender(url);
+
+    public SumologicEmitter(String url, String stream) {
+        sender = new SumologicSender(url,stream);
     }
 
     @Override
@@ -47,13 +47,13 @@ public class SumologicEmitter implements IEmitter<String> {
           return sendRecordsOneByOne(records);
         }
     }
-    
+
     public List<String> sendBatchConcatenating(List<String> records) {
-      boolean success = false; 
+      boolean success = false;
       List<String> failedRecords = new ArrayList<String>();
       List<String> currentBatch = new ArrayList<String>();
       Queue<String> unprocessedRecords = new LinkedList<String>(records);
-      
+
       String message = "";
       int recordCount = 0;
       for(String record: records) {
@@ -67,7 +67,7 @@ public class SumologicEmitter implements IEmitter<String> {
             LOG.info("Sending batch of: "+recordCount+" records");
             success = sender.sendToSumologic(message);
           } catch (IOException e) {
-            LOG.warn("Couldn't send batch of " + recordCount 
+            LOG.warn("Couldn't send batch of " + recordCount
                    + " record to Sumologic: "+e.getMessage());
             success = false;
           }
@@ -93,10 +93,10 @@ public class SumologicEmitter implements IEmitter<String> {
         failedRecords.addAll(unprocessedRecords);
         return failedRecords;
       }
-      
+
       return failedRecords;
     }
-    
+
     public List<String> sendRecordsOneByOne (List<String> records) {
       ArrayList<String> failedRecords = new ArrayList<String>();
       for (String record: records) {

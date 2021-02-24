@@ -48,30 +48,45 @@ public class CloudWatchMessageModelSumologicTransformer implements SumologicTran
 
     String jsonMessage = "";
     JSONObject outputObject;
+    JSONArray outputArray;
 
     List<LogEvent> logEvents = message.getLogEvents();
     int logEventsSize = logEvents.size();
+    String LogStream = message.getLogStream();
 
     for (int i = 0; i < logEventsSize; i++) {
-      LogEvent log = logEvents.get(i);
+        LogEvent log = logEvents.get(i);
 
-      String logMessage = log.getMessage();
+        String logMessage = log.getMessage();
 
-      // JSON format
-      if (isJSONValid(logMessage)) {
-        outputObject = new JSONObject(logMessage);
-        jsonMessage += outputObject.toString();
-      } else {
-        jsonMessage += logMessage;
-      }
+        // JSON format
+        if (isJSONValid(logMessage)) {
+          try {
+            outputObject = new JSONObject(logMessage);
+            jsonMessage += outputObject.toString();
+          } catch (JSONException ex) {
+            try {
+              outputArray = new JSONArray(logMessage);
+              for (int j = 0; j < outputArray.length(); j++){
+                jsonMessage += outputArray.optString(j);
+              }
+            } catch (Exception e) {
+              LOG.error(e);
+              LOG.error("log message: " + logMessage);
+            }
+          }
+        } else {
+          jsonMessage += logMessage;
+        }
 
-      // LOG.debug("log message: " + logMessage);
 
-      if (i < logEventsSize - 1) {
-        jsonMessage += "\n";
-      }
+        if (i < logEventsSize - 1) {
+          jsonMessage += "\n";
+        }
     }
-
+    jsonMessage += "\n";
+    jsonMessage += "LogStream:";
+    jsonMessage += LogStream.trim();
     return jsonMessage;
   }
 

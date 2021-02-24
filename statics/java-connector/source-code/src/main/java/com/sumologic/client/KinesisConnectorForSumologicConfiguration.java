@@ -14,12 +14,15 @@ public class KinesisConnectorForSumologicConfiguration extends KinesisConnectorC
     // Properties added for Sumologic
     public static final String PROP_SUMOLOGIC_URL = "sumologicUrl";
     public static final String PROP_TRANSFORMER_CLASS = "transformerClass";
-    
+    public static final String PROP_INPUT_STREAM = "kinesisInputStream";
+
     private static final String DEFAULT_SUMOLOGIC_URL = null;
     private static final String DEFAULT_TRANSFORMER_CLASS = null;
+    private static final String DEFAULT_INPUT_STREAM = null;
 
     public final String SUMOLOGIC_URL;
     public final String TRANSFORMER_CLASS;
+    public final String INPUT_STREAM;
 
     /**
      * Configure the connector application with any set of properties that are unique to the application. Any
@@ -27,8 +30,9 @@ public class KinesisConnectorForSumologicConfiguration extends KinesisConnectorC
      */
     public KinesisConnectorForSumologicConfiguration(Properties properties, AWSCredentialsProvider credentialsProvider) {
         super(properties, credentialsProvider);
-        
+
         SUMOLOGIC_URL = properties.getProperty(PROP_SUMOLOGIC_URL, DEFAULT_SUMOLOGIC_URL);
         TRANSFORMER_CLASS = properties.getProperty(PROP_TRANSFORMER_CLASS, DEFAULT_TRANSFORMER_CLASS);
+        INPUT_STREAM = properties.getProperty(PROP_INPUT_STREAM, DEFAULT_INPUT_STREAM);
     }
 }
