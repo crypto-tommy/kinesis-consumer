@@ -36,12 +36,14 @@ public class SumologicSenderTest {
   @Test
   public void theSenderShouldReturnFalseWhenFailing () {
     String url = MOCKED_HOST + "/sumologic/collections/fake-url";
+    String stream = "test";
+    
     
     String data = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
                       + "\nIn nisl tortor, dictum nec tristique ut, tincidunt vitae tortor. "
                       + "\nNam vitae urna ac sem vulputate dignissim at ac nibh. ";
     
-    SumologicSender sender = new SumologicSender(url);
+    SumologicSender sender = new SumologicSender(url,stream);
     try{
       boolean response = sender.sendToSumologic(data);
       Assert.assertFalse(response);
@@ -53,12 +55,13 @@ public class SumologicSenderTest {
   @Test
   public void theSenderShouldReturnTrueOnSuccess () {
     String url = MOCKED_HOST + MOCKED_COLLECTION;
+    String stream = "test";
 
     String data = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
                       + "\nIn nisl tortor, dictum nec tristique ut, tincidunt vitae tortor. "
                       + "\nNam vitae urna ac sem vulputate dignissim at ac nibh. ";
 
-    SumologicSender sender = new SumologicSender(url);
+    SumologicSender sender = new SumologicSender(url,stream);
     try{
       boolean response = sender.sendToSumologic(data);
       Assert.assertTrue(response);

@@ -31,6 +31,7 @@ public class SumologicEmitterTest {
   @Test
   public void theEmitterShouldReturnTheListParameterWhenFailing () {
     String url = MOCKED_HOST + "/sumologic/collections/fake-url";
+    String stream = "test";
     
     List<String> messages = new ArrayList<String>();
     messages.add("This is message #1");
@@ -38,7 +39,7 @@ public class SumologicEmitterTest {
     messages.add("This is message #3");
     messages.add("This is message #4");
     
-    SumologicEmitter emitter = new SumologicEmitter(url);
+    SumologicEmitter emitter = new SumologicEmitter(url,stream);
     List <String> notEmittedMessages = emitter.sendBatchConcatenating(messages);
     
     Assert.assertEquals(messages, notEmittedMessages);
@@ -47,6 +48,8 @@ public class SumologicEmitterTest {
   @Test
   public void theEmitterShouldReturnAnEmptyListOnSuccess () {
     String url = MOCKED_HOST + MOCKED_COLLECTION;
+    String stream = "test";
+    
     
     List<String> messages = new ArrayList<String>();
     messages.add("This is message #1");
@@ -54,7 +57,7 @@ public class SumologicEmitterTest {
     messages.add("This is message #3");
     messages.add("This is message #4");
     
-    SumologicEmitter emitter = new SumologicEmitter(url);
+    SumologicEmitter emitter = new SumologicEmitter(url,stream);
     List <String> notEmittedMessages = emitter.sendBatchConcatenating(messages);
     
     Assert.assertEquals(0, notEmittedMessages.size());

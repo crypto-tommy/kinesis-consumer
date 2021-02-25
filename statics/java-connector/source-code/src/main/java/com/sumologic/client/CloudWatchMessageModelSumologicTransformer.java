@@ -53,6 +53,7 @@ public class CloudWatchMessageModelSumologicTransformer implements SumologicTran
     List<LogEvent> logEvents = message.getLogEvents();
     int logEventsSize = logEvents.size();
     String LogStream = message.getLogStream();
+    String LogGroup = message.getLogGroup();
 
     for (int i = 0; i < logEventsSize; i++) {
         LogEvent log = logEvents.get(i);
@@ -85,8 +86,13 @@ public class CloudWatchMessageModelSumologicTransformer implements SumologicTran
         }
     }
     jsonMessage += "\n";
+    jsonMessage += "INFO:";
     jsonMessage += "LogStream:";
     jsonMessage += LogStream.trim();
+    jsonMessage += "LogGroup:";
+    jsonMessage += LogGroup.trim();
+    jsonMessage += "END";
+    jsonMessage += "\n";
     return jsonMessage;
   }
 
